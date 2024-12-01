@@ -85,17 +85,17 @@ head(cities)
 ```{r}
 #plot
 cities %>%
-  arrange(or) %>%
-  mutate(city_state = fct_reorder(city_state, or)) %>%
-  ggplot(aes(x = city_state, y = or)) +
-  geom_point(size = 2) +
+  ggplot(aes(x = fct_reorder(city_state, or), y = or)) +
+  geom_point() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.2) +
   coord_flip() +
   labs(
     title = "Adjusted Odds Ratios for Solving Homicides",
     x = "City, State",
     y = "Adjusted Odds Ratio"
-  ) 
+  ) +
+  theme_minimal()
+
 
 ```
-
+Most cities around OR of 1, suggesting that, on average, solving homicides does not differ dramatically between male and female victims.
