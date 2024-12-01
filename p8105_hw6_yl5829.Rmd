@@ -1,0 +1,37 @@
+---
+title: "hw6"
+output: html_document
+date: "2024-12-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+---
+
+### Problem 2
+
+```{r}
+#load the data
+homicides <- read_csv("./data/homicide-data.csv")
+```
+
+```{r}
+homicides <- homicides %>%
+  mutate(
+    city_state = str_c(city, ", ", state),
+    solved_binary = if_else(disposition == "Closed by arrest", 1, 0),
+    victim_age = as.numeric(victim_age)
+  ) %>%
+  filter(
+    !city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL"),
+    victim_race %in% c("White", "Black"),
+    !is.na(victim_age)
+  )
+head(homicides)
+```
+
+
+
