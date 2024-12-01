@@ -57,4 +57,28 @@ baltimore_or
 
 ```
 
+```{r}
+#logistic regression for all cities
+cities <- homicides %>%
+  group_by(city_state) %>%
+  nest() %>%
+  mutate(
+    model = map(data, ~ glm(
+      solved_binary ~ victim_age + victim_sex + victim_race,
+      family = binomial(),
+      data = .
+    )),
+    tidy_model = purrr::map(model, broom::tidy)
+  ) %>%
+  unnest(tidy_model) %>%
+  filter(term == "victim_sexMale") %>%
+  mutate(
+    or = exp(estimate),
+    ci_lower = exp(estimate - 1.96 * std.error),
+    ci_upper = exp(estimate + 1.96 * std.error)
+  ) %>%
+  select(city_state, or, ci_lower, ci_upper)
+
+head(cities)
+```
 
