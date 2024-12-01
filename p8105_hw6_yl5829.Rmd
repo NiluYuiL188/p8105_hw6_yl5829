@@ -49,7 +49,7 @@ baltimore_glm <- glm(
 baltimore_or <- broom::tidy(baltimore_glm) %>%
   filter(term == "victim_sexMale") %>%
   mutate(
-    OR = exp(estimate),
+    or = exp(estimate),
     ci_lower = exp(estimate - 1.96 * std.error),
     ci_upper = exp(estimate + 1.96 * std.error)
   )
@@ -80,5 +80,22 @@ cities <- homicides %>%
   select(city_state, or, ci_lower, ci_upper)
 
 head(cities)
+```
+
+```{r}
+#plot
+cities %>%
+  arrange(or) %>%
+  mutate(city_state = fct_reorder(city_state, or)) %>%
+  ggplot(aes(x = city_state, y = or)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.2) +
+  coord_flip() +
+  labs(
+    title = "Adjusted Odds Ratios for Solving Homicides",
+    x = "City, State",
+    y = "Adjusted Odds Ratio"
+  ) 
+
 ```
 
