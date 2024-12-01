@@ -33,5 +33,28 @@ homicides <- homicides %>%
 head(homicides)
 ```
 
+```{r}
+#only baltimore data
+baltimore <- homicides %>% 
+  filter(city_state == "Baltimore, MD")
+
+#ffit logistic regression model
+baltimore_glm <- glm(
+  solved_binary ~ victim_age + victim_sex + victim_race,
+  family = binomial(),
+  data = baltimore
+)
+
+#obtain odds ratio for male victims
+baltimore_or <- broom::tidy(baltimore_glm) %>%
+  filter(term == "victim_sexMale") %>%
+  mutate(
+    OR = exp(estimate),
+    ci_lower = exp(estimate - 1.96 * std.error),
+    ci_upper = exp(estimate + 1.96 * std.error)
+  )
+baltimore_or
+
+```
 
 
