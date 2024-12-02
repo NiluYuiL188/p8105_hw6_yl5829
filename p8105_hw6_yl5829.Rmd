@@ -7,6 +7,9 @@ date: "2024-12-01"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(modelr)
+library(broom)
+library(crossval)
 ```
 
 ---
@@ -99,3 +102,12 @@ cities %>%
 
 ```
 Most cities around OR of 1, suggesting that, on average, solving homicides does not differ dramatically between male and female victims.
+
+---
+
+### Problem 3
+
+```{r}
+birthweight <- read_csv("./data/birthweight.csv")
+```
+
