@@ -188,7 +188,16 @@ cv_results <- cv_data %>%
 ```
 
 ```{r}
-
+#summarize the data
+cv_summary <- cv_results %>%
+  summarise(
+    mean_rmsemy = mean(rmsemy),
+    mean_rmse1 = mean(rmse1),
+    mean_rmse2 = mean(rmse2)
+  )
 ```
 
+```{r}
+
+```
 
