@@ -112,16 +112,38 @@ birthweight <- read_csv("./data/birthweight.csv")
 ```
 ```{r}
 birthweight <- birthweight %>%
+  janitor::clean_names() %>%
   mutate(
-    babysex = factor(babysex, labels = c("Male", "Female")),
-    frace = factor(frace, levels = c(1, 2, 3, 4, 8, 9),
-                   labels = c("White", "Black", "Asian", "Puerto Rican", "Other", "Unknown")),
-    mrace = factor(mrace, levels = c(1, 2, 3, 4, 8),
-                   labels = c("White", "Black", "Asian", "Puerto Rican", "Other")),
-    malform = factor(malform, labels = c("Absent", "Present")),
-    smoken = ifelse(is.na(smoken), 0, smoken), # Replace NA in smoken with 0
-    across(where(is.character), as.factor) # Convert character variables to factor
-  ) %>%
-  drop_na() # Drop rows with missing data for simplicity
+    babysex = factor(babysex, levels = c(1,2), labels = c("male", "female")),
+    malform = case_when(malform == 0 ~ "absent", malform == 1 ~ "present"),
+    mrace = factor(mrace, levels = c(1,2,3,4,8), labels = c("White", "Black", "Asian", "Puerto Rican", "Other")),
+    frace = factor(frace, levels = c(1,2,3,4,8,9), labels = c("White", "Black", "Asian", "Puerto Rican", "Other", "Unknow"))) %>%
+  drop_na() 
+```
+
+```{r}
+#fit the proposed regression model
+mymodel <- lm(bwt ~ gaweeks + wtgain + babysex + malform, data = birthweight)
+
+
+#add some predictions and residuals
+birthweight <- birthweight %>%
+  modelr::add_predictions(mymodel, var = "fitted") %>%
+  modelr::add_residuals(mymodel, var = "residuals")
+
+```
+
+```{r}
+#plot
+birthweight %>%
+  ggplot(aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess", color = "blue", se = FALSE) +
+  labs(
+    title = "Residuals vs Fitted Values",
+    x = "Fitted Values",
+    y = "Residuals"
+  ) +
+  theme_minimal()
 ```
 
