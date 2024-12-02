@@ -164,3 +164,9 @@ birthweight %>%
   theme_minimal()
 ```
 
+```{r}
+#crossvalidation
+cv_data <- birthweight %>%
+  crossv_mc(100)
+```
+
