@@ -10,6 +10,7 @@ library(tidyverse)
 library(modelr)
 library(broom)
 library(crossval)
+library(mgcv)
 ```
 
 ---
@@ -167,6 +168,27 @@ birthweight %>%
 ```{r}
 #crossvalidation
 cv_data <- birthweight %>%
-  crossv_mc(100)
+  crossv_mc(100) %>%
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble)
+  )
 ```
+
+```{r}
+cv_results <- cv_data %>%
+  mutate(
+    mymodel = map(train, ~ lm(bwt ~ gaweeks + wtgain + babysex + malform, data = .)),
+    model1 = map(train, ~ lm(bwt ~ blength + gaweeks, data = .)),
+    model2 = map(train, ~ lm(bwt ~ bhead * blength * babysex, data = .)),
+    rmsemy = map2_dbl(mymodel, test, ~ rmse(model = .x, data = .y)),
+    rmse1 = map2_dbl(model1, test, ~ rmse(model = .x, data = .y)),
+    rmse2 = map2_dbl(model2, test, ~ rmse(model = .x, data = .y))
+  )
+```
+
+```{r}
+
+```
+
 
