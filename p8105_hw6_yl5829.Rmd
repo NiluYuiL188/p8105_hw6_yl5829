@@ -56,8 +56,7 @@ baltimore_or <- broom::tidy(baltimore_glm) %>%
     ci_lower = exp(estimate - 1.96 * std.error),
     ci_upper = exp(estimate + 1.96 * std.error)
   )
-baltimore_or
-
+baltimore_or 
 ```
 
 ```{r}
@@ -82,7 +81,9 @@ cities <- homicides %>%
   ) %>%
   select(city_state, or, ci_lower, ci_upper)
 
-head(cities)
+cities %>%
+  slice(1:5) %>%
+  knitr::kable(digits = 3)
 ```
 
 ```{r}
@@ -99,9 +100,8 @@ cities %>%
   ) +
   theme_minimal()
 
-
 ```
-Most cities around OR of 1, suggesting that, on average, solving homicides does not differ dramatically between male and female victims.
+Most cities smaller than OR of 1, indicating that after controlling for victim age and race, the likelihood of a crime involving a male victim being resolved is lower than that of a crime involving a female victim.
 
 ---
 
@@ -109,5 +109,19 @@ Most cities around OR of 1, suggesting that, on average, solving homicides does 
 
 ```{r}
 birthweight <- read_csv("./data/birthweight.csv")
+```
+```{r}
+birthweight <- birthweight %>%
+  mutate(
+    babysex = factor(babysex, labels = c("Male", "Female")),
+    frace = factor(frace, levels = c(1, 2, 3, 4, 8, 9),
+                   labels = c("White", "Black", "Asian", "Puerto Rican", "Other", "Unknown")),
+    mrace = factor(mrace, levels = c(1, 2, 3, 4, 8),
+                   labels = c("White", "Black", "Asian", "Puerto Rican", "Other")),
+    malform = factor(malform, labels = c("Absent", "Present")),
+    smoken = ifelse(is.na(smoken), 0, smoken), # Replace NA in smoken with 0
+    across(where(is.character), as.factor) # Convert character variables to factor
+  ) %>%
+  drop_na() # Drop rows with missing data for simplicity
 ```
 
