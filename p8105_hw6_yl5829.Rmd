@@ -122,6 +122,23 @@ birthweight <- birthweight %>%
 ```
 
 ```{r}
+#average birthweight by baby's sex
+birthweight %>%
+  group_by(babysex) %>%
+  summarise(
+    avg_birthweight = mean(bwt, na.rm = TRUE),
+    count = n()
+  )
+```
+
+
+My model trying to capture the most critical factors influencing birthweight while avoiding overfitting and ensuring interpretability. To achieve this goal I believe following predictors are important, Gestational Age, Maternal Weight Gain, Baby’s Sex, and Malformations. The reason are following:
+Gestational age is universally recognized as a primary determinant of birthweight.
+Maternal Weight Gain is the weight a mother gains during pregnancy, which I beleive is directly linked to the baby’s growth and weight.
+Baby’s Sex: Male babies tend to have slightly higher birthweights on average compared to female babies, this being verified by the code above. Male has 3157.583 avg birthweight while female has 3068.812 avg birthweight.
+Malformations: Congenital malformations may adversely affect fetal growth, leading to lower birthweights.
+
+```{r}
 #fit the proposed regression model
 mymodel <- lm(bwt ~ gaweeks + wtgain + babysex + malform, data = birthweight)
 
