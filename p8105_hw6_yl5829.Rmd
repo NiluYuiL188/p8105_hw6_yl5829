@@ -1,6 +1,6 @@
 ---
 title: "hw6"
-output: html_document
+output: github_document
 date: "2024-12-01"
 ---
 
@@ -214,4 +214,4 @@ cv_results %>%
     y = "RMSE"
   ) 
 ```
-
+Based on the plot, rmse2 (the one with interaction) is the most accurate because it has the lowest median RMSE compared to rmse1 (the one using length at birth and gestational age) and rmsemy. Additionally, while rmse2 shows moderate variability in RMSE its values are consistently lower than those of rmsemy, which has the highest RMSE and a wider spread, suggesting less stable performance. There is a narrower distribution for rmse1, however, with higher RMSE it is not very persuasive.
