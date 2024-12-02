@@ -13,6 +13,60 @@ library(crossval)
 library(mgcv)
 ```
 
+### Problem 1
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+
+```{r}
+bootstrap_weather <- function(data, n_bootstrap = 5000) {
+  boot_results <- replicate(n_bootstrap, {
+    sample_data <- data %>% sample_frac(size = 1, replace = TRUE)
+    fit <- lm(tmax ~ tmin, data = sample_data)
+    
+    r_squared <- broom::glance(fit)$r.squared
+    coefficients <- broom::tidy(fit)$estimate
+    log_beta_product <- log(coefficients[1] * coefficients[2])
+    
+    c(r_squared = r_squared, log_beta_product = log_beta_product)
+  }, simplify = TRUE)
+  
+  boot_results_df <- as.data.frame(t(boot_results))
+  names(boot_results_df) <- c("r_squared", "log_beta_product")
+  
+  return(boot_results_df)
+}
+
+bootstrap_results <- bootstrap_weather(weather_df)
+
+ci_r_squared <- quantile(bootstrap_results$r_squared, c(0.025, 0.975))
+ci_product <- quantile(bootstrap_results$log_beta_product, c(0.025, 0.975))
+
+ci_r_squared
+ci_product
+```
+```{r}
+ggplot(bootstrap_results, aes(x = r_squared)) +
+  geom_density() +
+  labs(title = "Distribution of R-squared", x = "R-squared", y = "Frequency")
+
+ggplot(bootstrap_results, aes(x = log_beta_product)) +
+  geom_density() +
+  labs(title = "Distribution of log(β^0 * β^1)", x = "log(β^0 * β^1)", y = "Frequency")
+```
+
+
 ---
 
 ### Problem 2
